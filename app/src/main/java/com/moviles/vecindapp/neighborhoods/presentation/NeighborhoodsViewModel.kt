@@ -18,7 +18,6 @@ class NeighborhoodsViewModel : ViewModel() {
     var estado = mutableStateOf("")
     var numeroCasas = mutableStateOf("")
 
-    // Estados para la lista de vecindarios
     var neighborhoodsList = mutableStateOf<List<com.moviles.vecindapp.neighborhoods.data.model.NeighborhoodResponse>>(emptyList())
     var errorMessage = mutableStateOf("")
 
@@ -52,7 +51,6 @@ class NeighborhoodsViewModel : ViewModel() {
                     showError.value = true
                     return@launch
                 }
-                // Convertir el número de casas a entero
                 val numCasas = numeroCasas.value.toIntOrNull() ?: 0
                 val request = NeighborhoodRequest(
                     nombre = nombre.value,
@@ -69,7 +67,6 @@ class NeighborhoodsViewModel : ViewModel() {
                 estado.value = ""
                 numeroCasas.value = ""
                 showError.value = false
-                // Después de agregar, actualizar la lista
                 getNeighborhoods()
             } catch (e: Exception) {
                 errorMessage.value = e.message ?: "Error al agregar vecindario"
