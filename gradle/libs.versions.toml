@@ -16,6 +16,7 @@ savedState = "2.8.7"
 lifecycleViewModelKtx = "2.8.7"
 navigationCompose = "2.8.5"
 kotlinSerialization = "1.6.3"
+playServicesLocation = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 # Navegación
 androidx-navigation-compose = { group =  'androidx.navigation', name = 'navigation-compose', version.ref = 'navigationCompose' }
 kotlinx-serialization-json = { group = 'org.jetbrains.kotlinx', name = 'kotlinx-serialization-json-jvm', version.ref = 'kotlinSerialization' }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

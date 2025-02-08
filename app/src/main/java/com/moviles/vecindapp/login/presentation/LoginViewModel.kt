@@ -16,16 +16,20 @@ class LoginViewModel : ViewModel() {
     var password = mutableStateOf("")
     var token = mutableStateOf("")
     var errorMessage = mutableStateOf("")
+    var loginError = mutableStateOf(false)
 
     fun onLogin() {
         viewModelScope.launch {
             try {
                 val response = loginUseCase(email.value, password.value)
                 token.value = response.access_token
-
                 TokenManager.token = response.access_token
+
+                errorMessage.value = ""
+                loginError.value = false
             } catch (e: Exception) {
                 errorMessage.value = e.message ?: "Error desconocido"
+                loginError.value = true
             }
         }
     }

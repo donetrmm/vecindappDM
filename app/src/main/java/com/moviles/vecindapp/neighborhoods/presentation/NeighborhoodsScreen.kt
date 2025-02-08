@@ -1,5 +1,9 @@
 package com.moviles.vecindapp.neighborhoods.presentation
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,11 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.moviles.vecindapp.neighborhoods.data.model.NeighborhoodResponse
 import com.moviles.vecindapp.ui.theme.VecindAppTheme
@@ -29,7 +36,7 @@ import com.moviles.vecindapp.ui.theme.VecindAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NeighborhoodsScreen(navController: NavHostController) {
-    val viewModel = remember { NeighborhoodsViewModel() }
+    val viewModel: NeighborhoodsViewModel = viewModel()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -266,6 +273,15 @@ private fun AddNeighborhoodDialog(
     onAdd: () -> Unit,
     viewModel: NeighborhoodsViewModel
 ) {
+    val context = LocalContext.current
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            viewModel.obtenerUbicacion()
+        }
+    }
+
     Dialog(
         onDismissRequest = {
             viewModel.showError.value = false
@@ -300,6 +316,25 @@ private fun AddNeighborhoodDialog(
                     isError = viewModel.errorFields.value.contains("nombre"),
                     errorMessage = "Nombre requerido"
                 )
+
+                Button(
+                    onClick = {
+                        if (ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            viewModel.obtenerUbicacion()
+                        } else {
+                            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonColors(
+                        containerColor = Color(0xFF096AAF),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Black,
+                        disabledContentColor = Color.White
+                    )
+                ) {
+                    Text("Usar mi ubicación")
+                }
 
                 InputField(
                     value = viewModel.direccion.value,

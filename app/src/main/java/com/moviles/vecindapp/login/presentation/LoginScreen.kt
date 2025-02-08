@@ -1,5 +1,9 @@
 package com.moviles.vecindapp.login.presentation
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,7 +26,6 @@ import com.moviles.vecindapp.core.navigation.Routes
 import com.moviles.vecindapp.ui.components.VecindAppLogo
 import com.moviles.vecindapp.ui.theme.VecindAppTheme
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.time.delay
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -30,7 +34,17 @@ fun LoginScreen(navController: NavHostController) {
     val password by viewModel.password
     val token by viewModel.token
     val errorMessage by viewModel.errorMessage
+    val loginError by viewModel.loginError
+
     var isLoading by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = loginError) {
+        if (loginError) {
+            vibrarDispositivo(context)
+            viewModel.loginError.value = false
+        }
+    }
 
     VecindAppTheme {
         Scaffold { innerPadding ->
@@ -51,7 +65,6 @@ fun LoginScreen(navController: NavHostController) {
                     Text(
                         text = "VecindApp",
                         style = MaterialTheme.typography.headlineLarge,
-
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     OutlinedTextField(
@@ -134,7 +147,6 @@ fun LoginScreen(navController: NavHostController) {
         if (token.isNotEmpty()) {
             isLoading = false
             navController.navigate(Routes.NEIGHBORHOODS) {
-                //pila de vuistasss
                 popUpTo(Routes.LOGIN) { inclusive = true }
             }
         }
@@ -154,3 +166,13 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
+fun vibrarDispositivo(context: Context) {
+    @Suppress("DEPRECATION")
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        @Suppress("DEPRECATION")
+        vibrator.vibrate(500)
+    }
+}
